@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SpringLens</title>
+    <link rel="icon" type="image/png" id="favicon">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Readex+Pro&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+
+    <!-- Date picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <!-- Styles -->
+    <style>
+        /* vars */
+
+        :root {
+            --0: #F0F7ED;
+            --1: #D6EAD0;
+            --2: #B8DCB0;
+            --3: #9AD08F;
+            --4: #6DB33F;
+            --5: #579331;
+            --6: #3E6D23;
+            --7: #2F363F;
+            --8: #20252B;
+            --9: #111418;
+        }
+
+        /* global */
+
+        body, html {
+            background-color: var(--9);
+        }
+
+        html {
+            min-height: 100vh;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+        *:not(ul):not(li):not(ol) {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            color: white;
+            font-family: "Readex Pro", sans-serif;
+        }
+
+        /* forms */
+
+        input, button {
+            color: white;
+            background-color: var(--8);
+            border-radius: 5px;
+            border: 1px solid var(--5);
+            font-family: "Readex Pro", sans-serif;
+            font-size: 11px;
+
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        input {
+            padding: 5px !important;
+
+            &:focus {
+                background-color: var(--9);
+            }
+
+            &[type="month"]::-webkit-calendar-picker-indicator {
+                filter: invert(1);
+                cursor: pointer;
+            }
+        }
+
+        button {
+            padding: 5px 10px !important;
+            cursor: pointer;
+            font-weight: bold;
+
+            &:hover {
+                background-color: var(--5);
+            }
+        }
+
+        /* core */
+
+        .spring-lens {
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            align-items: center;
+            align-self: center;
+            width: 100%;
+            height: 100%;
+
+            /* login */
+
+            #login-container {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                width: 200px;
+                margin: auto;
+                position: fixed;
+                top: 30vh;
+
+                #login-title {
+                    color: var(--1);
+                    font-weight: bold;
+                    font-size: 22px;
+                    text-align: center;
+                }
+            }
+
+            /* logs content */
+
+            #logs-container {
+                display: none;
+                width: 100%;
+                height: 100%;
+
+                /* navbar */
+
+                .navbar {
+                    width: 100%;
+                    border-bottom: 1px solid var(--4);
+                    padding: 10px;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+
+                    -webkit-touch-callout: none;
+                    -webkit-user-select: none;
+                    -moz-user-select: none;
+                    -ms-user-select: none;
+                    user-select: none;
+
+                    .navbar-logo {
+                        display: flex;
+                        gap: 5px;
+                        align-items: center;
+
+                        img {
+                            width: 30px;
+                            height: 30px;
+                        }
+
+                        .navbar-title {
+                            font-size: 20px;
+                            font-weight: bold;
+                        }
+                    }
+
+                    .navbar-tools {
+                        display: flex;
+                        gap: 10px;
+                        align-items: center;
+
+                        .time-filter {
+                            display: flex;
+                            gap: 10px;
+                            align-items: center;
+                            font-size: 11px;
+                        }
+
+                        .refresh {
+                            #logs-refresh {
+                                &[disabled] {
+                                    cursor: not-allowed;
+                                    filter: brightness(60%);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                /* logs data table */
+
+                .logs-data {
+                    width: 100%;
+                    height: calc(100vh - 55px);
+                    overflow-y: auto;
+
+                    * {
+                        font-size: 11px;
+                    }
+
+                    table {
+                        background-color: var(--8);
+                        border-spacing: 0;
+                        border-collapse: separate;
+                        margin: 0 auto;
+                        width: 100%;
+
+                        thead {
+                            position: sticky;
+                            top: 0;
+                            z-index: 1;
+
+                            -webkit-touch-callout: none;
+                            -webkit-user-select: none;
+                            -moz-user-select: none;
+                            -ms-user-select: none;
+                            user-select: none;
+
+                            tr th input {
+                                width: 100%;
+                            }
+                        }
+
+                        th, td {
+                            white-space: pre-wrap;
+                            width: fit-content;
+                        }
+
+                        tr {
+                            &.clickable {
+                                cursor: pointer;
+                                transition: background-color 0.2s;
+
+                                &:hover {
+                                    filter: brightness(120%);
+                                }
+                            }
+
+                            th {
+                                background-color: var(--9);
+
+                                &:first-of-type {
+                                    border-top-left-radius: 5px;
+                                }
+
+                                &:last-of-type {
+                                    border-top-right-radius: 5px;
+                                }
+                            }
+
+                            th, td {
+                                border-bottom: 1px var(--4) solid;
+                                border-right: 1px var(--4) solid;
+                                padding: 10px;
+
+                                &:last-child {
+                                    border-right: none;
+                                }
+                            }
+
+                            td {
+                                &:nth-child(1) {
+                                    text-align: center;
+                                    width: 150px !important;
+                                }
+
+                                &:nth-child(2) {
+                                    text-align: center;
+                                    width: 100px !important;
+                                }
+
+                                &.WARN {
+                                    color: #ffb74d;
+                                    background-color: #3e2723;
+                                }
+
+                                &.ERROR {
+                                    color: #e57373;
+                                    background-color: #2c1a1a;
+                                }
+                            }
+
+                            &:nth-child(even) {
+                                background-color: var(--9);
+                            }
+
+                            &:nth-child(odd) {
+                                background-color: var(--8);
+                            }
+
+                            &:last-child {
+                                td {
+                                    border-bottom: none;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /* modal */
+
+        #stacktrace-modal {
+            display: none;
+            min-height: 200px;
+            max-height: 80vh;
+            width: min(80%);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+
+            border: 1px solid var(--4);
+            border-radius: 5px;
+            background-color: var(--9);
+
+            .stacktrace-modal-header {
+                display: flex;
+                justify-content: space-between;
+                background-color: var(--8);
+                border-bottom: 1px solid var(--4);
+                padding: 5px;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+                align-items: center;
+
+                #stacktrace-modal-title {
+                    font-size: 14px;
+                }
+
+                #stacktrace-modal-close {
+                    font-size: 20px;
+                    cursor: pointer;
+                }
+            }
+
+            #stacktrace-modal-body {
+                padding: 5px;
+                font-size: 12px;
+                max-height: calc(80vh - 31px);
+                overflow-y: auto;
+                white-space: pre-wrap;
+                font-family: monospace;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="spring-lens">
+    <div id="login-container">
+        <div id="login-title">SpringLens Login</div>
+        <input id="login-input" type="password"/>
+        <button id="login-button">Login</button>
+    </div>
+
+    <div id="logs-container">
+        <div class="navbar">
+            <div class="navbar-logo">
+                <img id="logo">
+                <div class="navbar-title">
+                    SpringLens
+                </div>
+            </div>
+
+            <div class="navbar-tools">
+                <div class="time-filter">
+                    from <input id="date-time-filter-start" type="text" placeholder="Start date-time" data-input/>
+                    to <input id="date-time-filter-end" type="text" placeholder="End date-time" data-input/>
+                </div>
+                <div class="refresh">
+                    <button id="logs-refresh">Refresh</button>
+                </div>
+            </div>
+        </div>
+        <div class="logs-data">
+            <table id="logs-data-table">
+                <thead>
+                <tr>
+                    <th>timestamp</th>
+                    <th>level</th>
+                    <th>class</th>
+                    <th>message</th>
+                </tr>
+                <tr>
+                    <th><button id="sort-by-date">Sort ↑↓</button></th>
+                    <th><input id="level-filter-input" type="text"/></th>
+                    <th><input id="class-filter-input" type="text"/></th>
+                    <th><input id="message-filter-input" type="text"/></th>
+                </tr>
+                </thead>
+                <tbody id="logs-data-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="stacktrace-modal">
+    <div class="stacktrace-modal-header">
+        <div id="stacktrace-modal-title">
+            title
+        </div>
+        <div id="stacktrace-modal-close" class="material-symbols-outlined">
+            close
+        </div>
+    </div>
+    <pre id="stacktrace-modal-body">
+        body
+    </pre>
+</div>
+
+<script>
+    /*** API ***/
+
+        // api path
+    const apiPath = window.location.pathname.replace(/\/$/, "")
+    // const apiPath = "http://localhost:8080/spring-lens"
+
+    function generateApiUrl(path) {
+        return apiPath + path;
+    }
+
+    /*** LOGIN ***/
+
+        // login path
+    const loginApiPath = "/api/login";
+
+    // login method
+    async function login() {
+        // disable login button
+        const btn = document.getElementById('login-button');
+        btn.innerText = "Logging in...";
+        btn.disabled = true;
+        // disable login input
+        const input = document.getElementById('login-input');
+        input.disabled = true;
+        // retrieve password
+        const password = input.value;
+
+        // call login api
+        try {
+            const response = await fetch(generateApiUrl(loginApiPath), {
+                method: "GET",
+                headers: {
+                    "Authorization": password,
+                    "Content-Type": "application/json"
+                }
+            });
+            const result = await response.json();
+            // test result
+            if (result) {
+                // if login succeeds hide login & save password
+                const loginContainer = document.getElementById('login-container');
+                loginContainer.style.display = "none";
+                localStorage.setItem('password', password);
+                // fetch logs
+                await fetchLogs()
+            } else {
+                // if login fails, enable button & input, & reset input
+                btn.innerText = "Login";
+                btn.disabled = false;
+                input.value = "";
+                input.disabled = false;
+                localStorage.removeItem('password');
+            }
+        } catch (err) {
+            // if login fails, enable button & input, & reset input
+            btn.innerText = "Login";
+            btn.disabled = false;
+            input.value = "";
+            input.disabled = false;
+            localStorage.removeItem('password');
+        }
+    }
+
+    // login input & button listeners
+    document.getElementById('login-button').addEventListener('click', login);
+    document.getElementById('login-input').addEventListener('keyup', function (event) {
+        if (event.key === 'Enter') login()
+    });
+
+    // on-load check if password is saved
+    if (localStorage.getItem('password')) {
+        document.getElementById('login-input').value = localStorage.getItem('password');
+        login()
+    }
+
+    /*** FILTERS ***/
+
+    // date reversion checking function
+    function checkDatesReversion(selectedDates, dateStr, instance) {
+        const btn = document.getElementById('logs-refresh');
+        if (dateTimeFilterStart.latestSelectedDateObj > dateTimeFilterEnd.latestSelectedDateObj) {
+            btn.disabled = true;
+        } else {
+            btn.disabled = false;
+        }
+    }
+
+    const now = new Date();
+    // implement filter start date
+    const dateTimeFilterStart = flatpickr("#date-time-filter-start", {
+        enableTime: true,
+        time_24hr: true,
+        defaultDate: new Date(now.getTime() - 60 * 60 * 1000),
+        onChange: checkDatesReversion
+    });
+    // implement filter end date
+    const dateTimeFilterEnd = flatpickr("#date-time-filter-end", {
+        enableTime: true,
+        time_24hr: true,
+        defaultDate: now,
+        onChange: checkDatesReversion
+    });
+
+    // table data filters listeners
+    document.getElementById('level-filter-input').addEventListener('keyup', function (event) {
+        if (event.key === 'Enter') fetchLogs()
+    });
+    document.getElementById('class-filter-input').addEventListener('keyup', function (event) {
+        if (event.key === 'Enter') fetchLogs()
+    });
+    document.getElementById('message-filter-input').addEventListener('keyup', function (event) {
+        if (event.key === 'Enter') fetchLogs()
+    });
+
+    // table sorting button listener
+    document.getElementById('sort-by-date').addEventListener('click', sortTable);
+
+    // sorting function
+    let currentSort = 'a'
+    async function sortTable() {
+        const btn = document.getElementById('sort-by-date');
+        btn.disabled = true;
+        if (currentSort === 'a') {
+            currentSort = 'd';
+            btn.innerText = 'Sort desc ↓';
+        } else {
+            currentSort = 'a';
+            btn.innerText = 'Sort asc ↑';
+        }
+        await fetchLogs()
+        btn.disabled = false;
+    }
+
+    /*** LOGS ***/
+
+        // logs path
+    const logsApiPath = "/api/logs";
+
+    // fetching logs api function
+    async function fetchLogs() {
+        // disable refresh button
+        const btn = document.getElementById('logs-refresh');
+        btn.innerText = "Loading...";
+        btn.disabled = true;
+
+        // prepare filter payload
+        const payload = {
+            startDateTime: dateTimeFilterStart.latestSelectedDateObj,
+            endDateTime: dateTimeFilterEnd.latestSelectedDateObj,
+            levelFilter: document.getElementById('level-filter-input').value,
+            classFilter: document.getElementById('class-filter-input').value,
+            messageFilter: document.getElementById('message-filter-input').value,
+            sorting: currentSort
+        }
+
+        try {
+            // call fetch logs api
+            const response = await fetch(generateApiUrl(logsApiPath), {
+                method: "POST",
+                body: JSON.stringify(payload),
+                headers: {
+                    "Authorization": localStorage.getItem("password"),
+                    "Content-Type": "application/json"
+                }
+            });
+            const logs = await response.json();
+
+            // show logs container
+            const logContainer = document.getElementById('logs-container');
+            logContainer.style.display = 'block';
+
+            // fill data table with logs
+            fillTable(logs)
+        } catch (err) {
+            console.error("Failed to fetch logs:", err);
+        } finally {
+            btn.innerText = "Refresh";
+            btn.disabled = false;
+        }
+    }
+
+    // table filling logs function
+    let currentLogsList = []
+    function fillTable(logs) {
+        // save current logs for later use
+        currentLogsList = logs;
+
+        // fill table body with logs
+        const tableBody = document.getElementById("logs-data-table-body");
+        let tableBodyHTML = "";
+        logs.forEach((log, index) => {
+            // if log has stackTrace, enable click event to open stackTrace modal
+            const hasTrace = log.stackTrace && log.stackTrace.trim() !== "";
+            const rowClass = hasTrace ? 'clickable' : '';
+            const dataAttribute = hasTrace ? `data-index="${index}"` : '';
+            // append data
+            tableBodyHTML += `
+                <tr class="${rowClass}" ${dataAttribute}>
+                    <td>${log.timestamp}</td>
+                    <td class="${log.level}">${log.level}</td>
+                    <td>${log.logger}</td>
+                    <td>${log.message}</td>
+                </tr>
+                `;
+        });
+        tableBody.innerHTML = tableBodyHTML;
+    }
+
+    // log refresh btn listener
+    document.getElementById('logs-refresh').addEventListener('click', fetchLogs);
+
+    // stacktrace modal event, enabled for logs with ERROR level
+    document.getElementById('logs-data-table-body').addEventListener('click', function (event) {
+        const row = event.target.closest('.clickable');
+        if (!row) return;
+        const index = row.getAttribute('data-index');
+        const currentLog = currentLogsList[index];
+
+        const modal = document.getElementById('stacktrace-modal')
+        modal.style.display = 'block';
+        const modalTitle = document.getElementById('stacktrace-modal-title')
+        modalTitle.innerHTML = currentLog.timestamp;
+        const modalBody = document.getElementById('stacktrace-modal-body')
+        modalBody.innerHTML = currentLog.stackTrace;
+    });
+
+    // stacktrace modal close listener
+    document.getElementById('stacktrace-modal-close').addEventListener('click', function (event) {
+        document.getElementById('stacktrace-modal').style.display = 'none';
+    })
+
+    /*** GLOBAL ***/
+
+    // retrieve logo path & assign it to favicon & logo
+    document.getElementById('logo').src = generateApiUrl("/assets/logo.png");
+    document.getElementById('favicon').href = generateApiUrl("/assets/logo.png");
+</script>
+</body>
+</html>
