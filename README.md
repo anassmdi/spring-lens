@@ -15,7 +15,7 @@ If you use Docker containers or delete the old directory whenever you redeploy t
 ### Features
 
 - Password security, defaults to admin but can be customized
-- Start/End Data-time filters
+- Start/End Date-time filters
 - Log data filters
 - Sorting by timestamp
 - ERROR logs stackTrace viewer
