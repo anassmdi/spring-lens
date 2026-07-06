@@ -1,4 +1,4 @@
-package org.springlens.springlens;
+package io.github.anassmdi.springlens;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.BadRequestException;
@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.springlens.springlens.Constants.*;
+import static io.github.anassmdi.springlens.Constants.*;
 
 @Controller
 @RequestMapping("${spring-lens.path:/spring-lens}")

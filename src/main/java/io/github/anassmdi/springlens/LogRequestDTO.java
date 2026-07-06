@@ -1,4 +1,4 @@
-package org.springlens.springlens;
+package io.github.anassmdi.springlens;
 
 import java.time.Instant;
 

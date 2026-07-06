@@ -1,4 +1,4 @@
-package org.springlens.springlens;
+package io.github.anassmdi.springlens;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxyUtil;
@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 
-import static org.springlens.springlens.Constants.*;
+import static io.github.anassmdi.springlens.Constants.*;
 
 public class SpringLensAppender extends AppenderBase<ILoggingEvent> {
 
