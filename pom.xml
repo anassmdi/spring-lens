@@ -3,21 +3,34 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.springlens.springlens</groupId>
+    <groupId>io.github.anassmdi</groupId>
     <artifactId>springlens-starter</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>Spring Lens Starter</name>
     <description>Embedded local log diagnostics dashboard for Spring Boot applications</description>
+    <url>https://github.com/anassmdi/spring-lens</url>
 
-    <url/>
     <licenses>
-        <license/>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
     </licenses>
+
     <developers>
-        <developer/>
+        <developer>
+            <name>anassmdi</name>
+            <email>225123948+anassmdi@users.noreply.github.com</email>
+        </developer>
     </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/anassmdi/spring-lens.git</connection>
+        <developerConnection>scm:git:ssh://github.com/anassmdi/spring-lens.git</developerConnection>
+        <url>https://github.com/anassmdi/spring-lens/tree/main</url>
+    </scm>
 
     <properties>
         <java.version>25</java.version>
@@ -60,6 +73,60 @@
                 <version>3.15.0</version>
                 <configuration>
                     <release>${java.version}</release>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.6.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
                 </configuration>
             </plugin>
         </plugins>
